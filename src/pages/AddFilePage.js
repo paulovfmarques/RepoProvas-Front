@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import addFileImg from "../assets/add-file.png";
@@ -8,7 +9,20 @@ import StandardButton from "../components/Button";
 export default function AddFilePage() {
   
     const [loading, setLoading] = useState(false);
-    const [uploadMsg, setUploadMsg] = useState(false);   
+    const [uploadMsg, setUploadMsg] = useState(false);
+    const [databaseInfo, setDatabaseInfo] = useState("");
+
+    const fetchInfo = async () => {
+        try{
+            const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch/database-info`);
+            setDatabaseInfo(resp.data)
+            console.log(resp.data)
+        }catch(err){
+            console.log(err)
+        }
+    };
+
+    useEffect(() => fetchInfo(),[]);
 
     const history = useHistory();
     
@@ -30,13 +44,15 @@ export default function AddFilePage() {
 
                 <h2>Adicionar Prova ao Repositório</h2>
                 <AddFileImg src={addFileImg}/>
-
-                <StyledForm 
-                    value={{
-                        loading,
-                        setLoading,
-                        setUploadMsg}}
-                />
+                {databaseInfo && (
+                    <StyledForm
+                        databaseInfo = {databaseInfo}
+                        loading = {loading}
+                        setLoading = {setLoading}
+                        setUploadMsg = {setUploadMsg}
+                    />
+                )}
+                
                 {
                     uploadMsg ? (
                         <p>Upload completo!</p>

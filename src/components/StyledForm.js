@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import styled from "styled-components";
 import StandardButton from "./Button";
 
-export default function StyledForm({value}) {
-    const {loading, setLoading, setUploadMsg} = value;
-    const [databaseInfo, setDatabaseInfo] = useState("")
+export default function StyledForm({ databaseInfo, loading, setLoading, setUploadMsg }) {   
+
     const [title, setTitle] = useState("");
     const [subject, setSubject] = useState("");
     const [category, setCategory] = useState("");
@@ -28,18 +27,8 @@ export default function StyledForm({value}) {
         url
     };    
 
-    const fetchInfo = () => {
-        clearValues();
-        
-        axios.get(`${process.env.REACT_APP_BACKURL}/api/database-info`)
-        .then(({data}) => {
-            setDatabaseInfo(data)
-        })
-        .catch(err => console.log(err))
-    };
-
     const sendInfo = () => {
-        axios.post(`${process.env.REACT_APP_BACKURL}/api/database-info`,dataObj)
+        axios.post(`${process.env.REACT_APP_BACKURL}/api/upload/exam-info`,dataObj)
         .then(() => {
             clearValues();
             setLoading(false);
@@ -48,22 +37,14 @@ export default function StyledForm({value}) {
             },2000);
         })
         .catch(err => console.log(err))
-    };
-
-    // useEffect(fetchInfo(),[]);
-
-
-    //DELETAR DEPOIS
-    const profArr = [{id:1, professor: "Professor Leôncio"}];
-    const subjectsArr = [{id:1, materia: "Termodinâmica"}];
-    const categoryArr = [{id:1, categoria: "P1"}];
+    };       
 
     const submitHandler = (event) => {
         event.preventDefault()
         setUploadMsg(true);
         setLoading(true);
 
-        //sendInfo();
+        sendInfo();
     };
 
     return (
@@ -84,11 +65,10 @@ export default function StyledForm({value}) {
                         id="subject"
                         >
                             <option value="" hidden>Selecione</option>
-                            {
-                                subjectsArr.map(subj => {
-                                    return(
-                                        <option key={subj.id} value={subj.materia}>{subj.materia}</option>
-                                    );
+                            {databaseInfo && databaseInfo.subjects.map(subj => {
+                                return(
+                                    <option key={subj.id} value={subj.name}>{subj.name}</option>
+                                );
                                 })
                             }
                         </select>
@@ -105,11 +85,10 @@ export default function StyledForm({value}) {
                         id="category"
                         >
                             <option value="" hidden>Selecione</option>
-                            {
-                                categoryArr.map(categ => {
-                                    return(
-                                        <option key={categ.id} value={categ.categoria}>{categ.categoria}</option>
-                                    );
+                            {databaseInfo && databaseInfo.category.map(categ => {
+                                return(
+                                    <option key={categ.id} value={categ.category}>{categ.category}</option>
+                                );
                                 })
                             }
                         </select>
@@ -123,13 +102,31 @@ export default function StyledForm({value}) {
                         id="professor"
                         >
                             <option value="" hidden>Selecione</option>
-                            {
-                                profArr.map(prof => {
+                            {subject === "" ? (
+                                databaseInfo.professors.map(prof => {                                
                                     return(
-                                        <option key={prof.id} value={prof.professor}>{prof.professor}</option>
+                                        <option key={prof.id} value={prof.name}>{prof.name}</option>
                                     );
                                 })
-                            }
+                                ) : (
+                                databaseInfo.professors.map(prof => {
+                                    let subjectId = 0;
+                                    databaseInfo.subjects.map(sub => {
+                                        if(sub.name === subject) return subjectId = sub.id;
+                                    })                                    
+
+                                    let professorIdArr = [];
+                                    databaseInfo.profClass.map(p => {
+                                        if(p.subject_id === subjectId) return professorIdArr.push(p.professor_id);
+                                    });                                    
+
+                                    if(professorIdArr.includes(prof.id)){
+                                        return(
+                                            <option key={prof.id} value={prof.name}>{prof.name}</option>
+                                        );
+                                    }
+                                })
+                            )}
                         </select>
                     </div>
                 </div>
