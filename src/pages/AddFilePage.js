@@ -36,6 +36,7 @@ export default function AddFilePage() {
                         loading = {loading}
                         setLoading = {setLoading}
                         setUploadMsg = {setUploadMsg}
+                        
                     />
                 )}
                 
