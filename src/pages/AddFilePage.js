@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import addFileImg from "../assets/add-file.png";
 import StyledForm from "../components/StyledForm";
-import StandardButton from "../components/Button";
+import ReturnButton from "../components/ReturnButton";
 
 export default function AddFilePage() {
   
@@ -24,23 +23,10 @@ export default function AddFilePage() {
 
     useEffect(() => fetchInfo(),[]);
 
-    const history = useHistory();
-    
-    const goBack = () => {
-        if(loading) return;        
-        history.push("/");
-    }
-
-
     return (
         <>
             <AddFormBox>
-
-                <BtnContainer onClick={() => goBack()}>                    
-                    <StandardButton>
-                        Voltar
-                    </StandardButton>                    
-                </BtnContainer>
+                <ReturnButton loading={loading}/>
 
                 <h2>Adicionar Prova ao Repositório</h2>
                 <AddFileImg src={addFileImg}/>
@@ -89,22 +75,4 @@ const AddFileImg = styled.img`
     position:absolute;
     top:10rem;
     left: 1rem;
-`;
-
-const BtnContainer = styled.div`    
-    width:100%;
-    display:flex;
-    justify-content:flex-end;
-    
-    button{
-        z-index: 999;
-        position:absolute;
-        top: 1rem;
-        right: 2rem;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        width: 5rem;
-        height: 0.5rem;        
-    }
 `;

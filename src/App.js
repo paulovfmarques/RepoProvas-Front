@@ -5,6 +5,7 @@ import { createGlobalStyle } from "styled-components";
 import Header from "./components/Header";
 import MenuPage from "./pages/MenuPage";
 import AddFilePage from "./pages/AddFilePage";
+import SearchPage from "./pages/SearchPage";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
 
       <Router>
         <Switch>
+          <Route path="/search-file" component={SearchPage}/>
           <Route path="/add-file" component={AddFilePage}/>
           <Route path="/" exact component={MenuPage}/>
         </Switch>
