@@ -16,7 +16,7 @@ export default function SearchPage() {
     async function selectHandler() {
         if(selected === "subject"){
             try{
-                const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch/subjects`);
+                const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch/count-info`);
                 console.log(resp.data);
                 setSubjectsData(resp.data);
             }catch(err){

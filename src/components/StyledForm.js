@@ -32,6 +32,7 @@ export default function StyledForm({ databaseInfo, loading, setLoading, setUploa
         .then(() => {
             clearValues();
             setLoading(false);
+            setUploadMsg(true);
             setTimeout(() => {
                 setUploadMsg(false);
             },2000);
@@ -40,8 +41,7 @@ export default function StyledForm({ databaseInfo, loading, setLoading, setUploa
     };       
 
     const submitHandler = (event) => {
-        event.preventDefault()
-        setUploadMsg(true);
+        event.preventDefault();
         setLoading(true);
 
         sendInfo();
