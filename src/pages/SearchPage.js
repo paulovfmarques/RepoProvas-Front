@@ -5,59 +5,38 @@ import searchImg from "../assets/search-file.png";
 import ResultCell from "../components/ResultCell";
 import ReturnButton from "../components/ReturnButton";
 
+import {fetchSubjectsPerTerm,
+        fetchCagories,fetchExams,
+        fetchProfessorCategories,
+        fetchProfessorExams} from "../utils/searchFunctions"
+
 export default function SearchPage() {
     const [selected, setSelected] = useState("");
     const [page, setPage] = useState(1);
-    const [subjectsData, setSubjectsData] = useState("");
-    const [perTerm, setPerTem] = useState([""]);
+    const [subjectsData, setSubjectsData] = useState("");    
+    const [perTerm, setPerTerm] = useState([""]);
     const [perCategory,setPerCategory] = useState("");
     const [exams, setExams] = useState("");
 
     async function selectHandler() {
         if(selected === "subject"){
             try{
-                const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch/terms`);                
+                const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch-by-subject/terms`);                
                 setSubjectsData(resp.data);
             }catch(err){
                 console.log(err)
             }
         }else if(selected === "professor"){
-            console.log("work in progress")
+            try{
+                const res = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch-by-professor/professors`);                
+                setSubjectsData(res.data);
+            }catch(err){
+                console.log(err)
+            }
         }
     }    
 
-    useEffect(() => selectHandler(),[selected]);
-
-    async function fetchSubjectsPerTerm(id) {
-        try{
-            const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch/subjects`,{params: id});
-            setPerTem(resp.data);
-        }catch(err){
-            console.log(err)
-        }
-    }
-
-    async function fetchCagories(id) {
-        try{
-            const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch/categories`,{params: id});
-            console.log(resp.data);
-            setPerCategory(resp.data);
-        }catch(err){
-            console.log(err)
-        }
-    }
-
-    async function fetchExams(id) {
-        try{
-            const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch/exams`,{params: id});
-            console.log(resp.data);
-            setExams(resp.data);
-        }catch(err){
-            console.log(err)
-        }
-    }
-    
-   
+    useEffect(() => selectHandler(),[selected]);  
 
     return (
         <>
@@ -96,10 +75,11 @@ export default function SearchPage() {
                                 return <ResultCell
                                 page={page} 
                                 setPage={setPage}
+                                setData={setPerTerm}
                                 handler={fetchSubjectsPerTerm}
                                 itemId={{term_id: subj.term_id}}
                                 key={subj.term_name} 
-                                term={subj.term_name} 
+                                info={subj.term_name} 
                                 count={subj.count}/>
                             })
                         ) : page === 2 ? (
@@ -107,10 +87,11 @@ export default function SearchPage() {
                                 return <ResultCell 
                                 page={page} 
                                 setPage={setPage}
+                                setData={setPerCategory}
                                 handler={fetchCagories}
                                 itemId={{subject_id: subj.subject_id}}
                                 key={index} 
-                                term={subj.subject_name} 
+                                info={subj.subject_name} 
                                 count={subj.count}/>
                             })
                         ) : page === 3 ? (
@@ -118,10 +99,11 @@ export default function SearchPage() {
                                 return <ResultCell 
                                 page={page} 
                                 setPage={setPage}
+                                setData={setExams}
                                 handler={fetchExams}
                                 itemId={{category_id: subj.category_id, subject_id: subj.subject_id}} 
                                 key={index} 
-                                term={subj.category_name} 
+                                info={subj.category} 
                                 count={subj.count}/>
                             })
                         ) : page === 4 ? (
@@ -131,7 +113,7 @@ export default function SearchPage() {
                                 setPage={setPage}
                                 url={subj.url}
                                 key={index} 
-                                term={subj.exam} 
+                                info={subj.exam} 
                                 count={subj.professor}/>
                             })
                         ) : ("")
@@ -141,11 +123,39 @@ export default function SearchPage() {
 
                     ) : selected === "professor" ? (
                         page === 1 ? (
-                            <p>Work in Progress</p>
+                            perCategory && perCategory.map((subj,index) => {
+                                return <ResultCell
+                                page={page} 
+                                setPage={setPage}
+                                setData={setPerCategory}
+                                handler={fetchProfessorCategories}
+                                itemId={{professor_id: subj.professor_id}}
+                                key={index} 
+                                info={subj.professor} 
+                                count={subj.count}/>
+                            })
                         ) : page === 2 ? (
-                            ""
+                            subjectsData && subjectsData.map((subj,index) => {
+                                return <ResultCell
+                                page={page} 
+                                setPage={setPage}
+                                setData={setExams}
+                                handler={fetchProfessorExams}
+                                itemId={{professor_id: subj.professor_id, category_id: subj.category_id}}
+                                key={index} 
+                                info={subj.professor} 
+                                count={subj.count}/>
+                            })
                         ) : page === 3 ? (
-                            ""
+                            exams && exams.map((subj,index) => {
+                                return <ResultCell 
+                                page={page} 
+                                setPage={setPage}
+                                url={subj.url}
+                                key={index} 
+                                info={subj.exam} 
+                                count={subj.subject_name}/>
+                            })
                         ) : (
                             ""
                         )

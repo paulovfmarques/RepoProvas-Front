@@ -1,18 +1,18 @@
 import React from "react";
 import styled from "styled-components";
 
-export default function ResultCell({handler = null, url = null, itemId, page, setPage, term, count}) {
+export default function ResultCell({handler = null, url = null, setData, itemId, page, setPage, info, count}) {
     return (
         <Cell onClick={() => {
             if(page === 4) {
                 window.open(url,'_blank');
                 return;
             } else {
-                handler(itemId);
+                handler(itemId,setData);
                 setPage(page + 1);
             }
         }}>
-            <span>{term}</span>
+            <span>{info}</span>
             <span>{`${count} ${page === 1 ? "disciplina(s)" : page !== 4 ? "prova(s)" : ""}`}</span>
         </Cell>
     );

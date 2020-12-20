@@ -13,7 +13,7 @@ export default function AddFilePage() {
 
     const fetchInfo = async () => {
         try{
-            const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch/database-info`);
+            const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/upload/database-info`);
             setDatabaseInfo(resp.data)
             console.log(resp.data)
         }catch(err){
