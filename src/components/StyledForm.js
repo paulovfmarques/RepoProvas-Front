@@ -113,11 +113,13 @@ export default function StyledForm({ databaseInfo, loading, setLoading, setUploa
                                     let subjectId = 0;
                                     databaseInfo.subjects.map(sub => {
                                         if(sub.name === subject) return subjectId = sub.id;
+                                        return null;
                                     })                                    
 
                                     let professorIdArr = [];
                                     databaseInfo.profClass.map(p => {
                                         if(p.subject_id === subjectId) return professorIdArr.push(p.professor_id);
+                                        return null;
                                     });                                    
 
                                     if(professorIdArr.includes(prof.id)){
@@ -125,6 +127,7 @@ export default function StyledForm({ databaseInfo, loading, setLoading, setUploa
                                             <option key={prof.id} value={prof.name}>{prof.name}</option>
                                         );
                                     }
+                                    return null;
                                 })
                             )}
                         </select>

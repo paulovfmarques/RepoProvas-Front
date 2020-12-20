@@ -4,20 +4,19 @@ import styled from "styled-components";
 import searchImg from "../assets/search-file.png";
 import ResultCell from "../components/ResultCell";
 import ReturnButton from "../components/ReturnButton";
-import StandardButton from "../components/Button";
 
 export default function SearchPage() {
     const [selected, setSelected] = useState("");
     const [page, setPage] = useState(1);
     const [subjectsData, setSubjectsData] = useState("");
-
-    console.log(page)
+    const [perTerm, setPerTem] = useState([""]);
+    const [perCategory,setPerCategory] = useState("");
+    const [exams, setExams] = useState("");
 
     async function selectHandler() {
         if(selected === "subject"){
             try{
-                const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch/count-info`);
-                console.log(resp.data);
+                const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch/terms`);                
                 setSubjectsData(resp.data);
             }catch(err){
                 console.log(err)
@@ -25,9 +24,38 @@ export default function SearchPage() {
         }else if(selected === "professor"){
             console.log("work in progress")
         }
+    }    
+
+    useEffect(() => selectHandler(),[selected]);
+
+    async function fetchSubjectsPerTerm(id) {
+        try{
+            const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch/subjects`,{params: id});
+            setPerTem(resp.data);
+        }catch(err){
+            console.log(err)
+        }
     }
 
-    useEffect(() => selectHandler(),[selected])
+    async function fetchCagories(id) {
+        try{
+            const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch/categories`,{params: id});
+            console.log(resp.data);
+            setPerCategory(resp.data);
+        }catch(err){
+            console.log(err)
+        }
+    }
+
+    async function fetchExams(id) {
+        try{
+            const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch/exams`,{params: id});
+            console.log(resp.data);
+            setExams(resp.data);
+        }catch(err){
+            console.log(err)
+        }
+    }
     
    
 
@@ -59,42 +87,61 @@ export default function SearchPage() {
                     </form>                    
                 </SearchOptions>
                 <SearchResultBox>
-                    {selected === "subject" ? (
+                    {
+                    // SEARCH BY SUBJECT
+                    
+                    selected === "subject" ? (
                         page === 1 ? (
-                            subjectsData && subjectsData.subjectsPerTerm.map(subj => {
+                            subjectsData && subjectsData.map(subj => {
                                 return <ResultCell
                                 page={page} 
                                 setPage={setPage}
+                                handler={fetchSubjectsPerTerm}
+                                itemId={{term_id: subj.term_id}}
                                 key={subj.term_name} 
                                 term={subj.term_name} 
                                 count={subj.count}/>
                             })
                         ) : page === 2 ? (
-                            subjectsData && subjectsData.examsPerSubject.map(subj => {
+                                perTerm && perTerm.map((subj,index) => {
                                 return <ResultCell 
                                 page={page} 
-                                setPage={setPage} 
-                                key={subj.subject_name} 
+                                setPage={setPage}
+                                handler={fetchCagories}
+                                itemId={{subject_id: subj.subject_id}}
+                                key={index} 
                                 term={subj.subject_name} 
                                 count={subj.count}/>
                             })
                         ) : page === 3 ? (
-                            subjectsData && subjectsData.examsPerCategory.map(subj => {
+                            perCategory && perCategory.map((subj,index) => {
                                 return <ResultCell 
                                 page={page} 
-                                setPage={setPage} 
-                                key={subj.category_name} 
+                                setPage={setPage}
+                                handler={fetchExams}
+                                itemId={{category_id: subj.category_id, subject_id: subj.subject_id}} 
+                                key={index} 
                                 term={subj.category_name} 
                                 count={subj.count}/>
                             })
-                        ) : (
-                            ""
-                        )
+                        ) : page === 4 ? (
+                            exams && exams.map((subj,index) => {
+                                return <ResultCell 
+                                page={page} 
+                                setPage={setPage}
+                                url={subj.url}
+                                key={index} 
+                                term={subj.exam} 
+                                count={subj.professor}/>
+                            })
+                        ) : ("")
+
+
+                    //SEARCH BY PROFESSORS
+
                     ) : selected === "professor" ? (
                         page === 1 ? (
-                            subjectsData && subjectsData.subjectsPerTerm.map(subj => {
-                                return <ResultCell key={subj.term_name} term={subj.term_name} count={subj.count}/>
-                            })
+                            <p>Work in Progress</p>
                         ) : page === 2 ? (
                             ""
                         ) : page === 3 ? (
@@ -107,12 +154,16 @@ export default function SearchPage() {
                     )
                     }                    
                 </SearchResultBox>
-                <ReturnSearch onClick={() => {
-                    if(page === 1) return;
-                    setPage(page - 1);
-                }}>
-                    {'<'}
-                </ReturnSearch>
+                {page >= 2 ? (
+                    <ReturnSearch onClick={() => {
+                        if(page === 1) return;
+                        setPage(page - 1);
+                    }}>
+                        {'<'}
+                    </ReturnSearch>
+                ) : (
+                    ""
+                )}                
                 <SearchFileImg src={searchImg}/>
             </MenuBox>
         </>
