@@ -1,14 +1,14 @@
 import React from "react";
 import styled from "styled-components";
 
-export default function ResultCell({handler = null, url = null, setData, itemId, page, setPage, info, count}) {
+export default function ResultCell({handler = null, url = null, type, setData, itemId, page, setPage, info, count}) {
     return (
-        <Cell onClick={() => {
-            if(page === 4) {
+        <Cell onClick={async () => {
+            if(url) {
                 window.open(url,'_blank');
                 return;
             } else {
-                handler(itemId,setData);
+                await handler(itemId,setData,type);
                 setPage(page + 1);
             }
         }}>

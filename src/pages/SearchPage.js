@@ -5,10 +5,7 @@ import searchImg from "../assets/search-file.png";
 import ResultCell from "../components/ResultCell";
 import ReturnButton from "../components/ReturnButton";
 
-import {fetchSubjectsPerTerm,
-        fetchCagories,fetchExams,
-        fetchProfessorCategories,
-        fetchProfessorExams} from "../utils/searchFunctions"
+import { fetchBySubject, fetchByProfessor } from "../utils/searchFunctions"
 
 export default function SearchPage() {
     const [selected, setSelected] = useState("");
@@ -20,21 +17,11 @@ export default function SearchPage() {
 
     async function selectHandler() {
         if(selected === "subject"){
-            try{
-                const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch-by-subject/terms`);                
-                setSubjectsData(resp.data);
-            }catch(err){
-                console.log(err)
-            }
+            await fetchBySubject(null, setSubjectsData, "terms");
         }else if(selected === "professor"){
-            try{
-                const res = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch-by-professor/professors`);
-                setSubjectsData(res.data);
-            }catch(err){
-                console.log(err)
-            }
+            await fetchByProfessor(null, setSubjectsData, "professors");
         }
-    }    
+    };
 
     useEffect(() => selectHandler(),[selected]);
 
@@ -44,7 +31,7 @@ export default function SearchPage() {
         setPerTerm("");
         setPerCategory("");
         setExams("");
-    }
+    };
 
     return (
         <>
@@ -84,7 +71,8 @@ export default function SearchPage() {
                                 page={page} 
                                 setPage={setPage}
                                 setData={setPerTerm}
-                                handler={fetchSubjectsPerTerm}
+                                type={"subjects"}
+                                handler={fetchBySubject}
                                 itemId={{term_id: subj.term_id}}
                                 key={subj.term_name} 
                                 info={subj.term_name} 
@@ -96,7 +84,8 @@ export default function SearchPage() {
                                 page={page} 
                                 setPage={setPage}
                                 setData={setPerCategory}
-                                handler={fetchCagories}
+                                type={"categories"}
+                                handler={fetchBySubject}
                                 itemId={{subject_id: subj.subject_id}}
                                 key={index} 
                                 info={subj.subject_name} 
@@ -108,7 +97,8 @@ export default function SearchPage() {
                                 page={page} 
                                 setPage={setPage}
                                 setData={setExams}
-                                handler={fetchExams}
+                                type={"exams"}
+                                handler={fetchBySubject}
                                 itemId={{category_id: subj.category_id, subject_id: subj.subject_id}} 
                                 key={index} 
                                 info={subj.category} 
@@ -124,7 +114,9 @@ export default function SearchPage() {
                                 info={subj.exam} 
                                 count={subj.professor}/>
                             })
-                        ) : ("")
+                        ) : (
+                            <p>Nada foi encontrado</p>
+                        )
 
 
                     //SEARCH BY PROFESSORS
@@ -136,7 +128,8 @@ export default function SearchPage() {
                                 page={page} 
                                 setPage={setPage}
                                 setData={setPerCategory}
-                                handler={fetchProfessorCategories}
+                                type={"categories"}
+                                handler={fetchByProfessor}
                                 itemId={{professor_id: subj.professor_id}}
                                 key={index} 
                                 info={subj.professor} 
@@ -148,7 +141,8 @@ export default function SearchPage() {
                                 page={page} 
                                 setPage={setPage}
                                 setData={setExams}
-                                handler={fetchProfessorExams}
+                                type={"exams"}
+                                handler={fetchByProfessor}
                                 itemId={{professor_id: subj.professor_id, category_id: subj.category_id}}
                                 key={index} 
                                 info={subj.category} 
@@ -165,7 +159,7 @@ export default function SearchPage() {
                                 count={subj.subject_name}/>
                             })
                         ) : (
-                            ""
+                            <p>Nada foi encontrado</p>
                         )
                     ) : (
                         <p>Selecione um modo de busca</p>
