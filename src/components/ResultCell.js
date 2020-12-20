@@ -13,7 +13,7 @@ export default function ResultCell({handler = null, url = null, setData, itemId,
             }
         }}>
             <span>{info}</span>
-            <span>{`${count} ${page === 1 ? "disciplina(s)" : page !== 4 ? "prova(s)" : ""}`}</span>
+            <span>{`${count} ${page === 1 ? "disciplina(s)" : page !== 4 && !isNaN(count) ? "prova(s)" : ""}`}</span>
         </Cell>
     );
 }

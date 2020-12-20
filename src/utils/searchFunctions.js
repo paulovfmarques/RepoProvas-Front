@@ -32,8 +32,7 @@ export async function fetchExams(id,setData) {
 
 export async function fetchProfessorCategories(id,setData) {
     try{
-        const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch-by-professor/categories`,{params: id});
-        console.log(resp.data);
+        const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch-by-professor/categories`,{params: id});        
         setData(resp.data);
     }catch(err){
         console.log(err)
@@ -42,8 +41,7 @@ export async function fetchProfessorCategories(id,setData) {
 
 export async function fetchProfessorExams(id,setData) {
     try{
-        const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch-by-professor/exams`,{params: id});
-        console.log(resp.data);
+        const resp = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch-by-professor/exams`,{params: id});        
         setData(resp.data);
     }catch(err){
         console.log(err)

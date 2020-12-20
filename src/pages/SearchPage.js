@@ -28,7 +28,7 @@ export default function SearchPage() {
             }
         }else if(selected === "professor"){
             try{
-                const res = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch-by-professor/professors`);                
+                const res = await axios.get(`${process.env.REACT_APP_BACKURL}/api/fetch-by-professor/professors`);
                 setSubjectsData(res.data);
             }catch(err){
                 console.log(err)
@@ -36,7 +36,15 @@ export default function SearchPage() {
         }
     }    
 
-    useEffect(() => selectHandler(),[selected]);  
+    useEffect(() => selectHandler(),[selected]);
+
+    const searchMode = (e) => {
+        setSelected(e.target.value);
+        setPage(1);
+        setPerTerm("");
+        setPerCategory("");
+        setExams("");
+    }
 
     return (
         <>
@@ -49,7 +57,7 @@ export default function SearchPage() {
                             <input 
                             id="per-professor" 
                             value="professor" 
-                            onClick={(e) => setSelected(e.target.value)} 
+                            onClick={(e) => searchMode(e)} 
                             type="radio" 
                             name="search-input"/>
                             <label htmlFor="per-professor">Por professor</label>
@@ -58,7 +66,7 @@ export default function SearchPage() {
                             <input 
                             id="per-subject"
                             value="subject"                             
-                            onClick={(e) => setSelected(e.target.value)} 
+                            onClick={(e) => searchMode(e)} 
                             type="radio" 
                             name="search-input"/>
                             <label htmlFor="per-subject" >Por disciplina</label>
@@ -123,7 +131,7 @@ export default function SearchPage() {
 
                     ) : selected === "professor" ? (
                         page === 1 ? (
-                            perCategory && perCategory.map((subj,index) => {
+                            subjectsData && subjectsData.map((subj,index) => {
                                 return <ResultCell
                                 page={page} 
                                 setPage={setPage}
@@ -135,7 +143,7 @@ export default function SearchPage() {
                                 count={subj.count}/>
                             })
                         ) : page === 2 ? (
-                            subjectsData && subjectsData.map((subj,index) => {
+                            perCategory && perCategory.map((subj,index) => {
                                 return <ResultCell
                                 page={page} 
                                 setPage={setPage}
@@ -143,7 +151,7 @@ export default function SearchPage() {
                                 handler={fetchProfessorExams}
                                 itemId={{professor_id: subj.professor_id, category_id: subj.category_id}}
                                 key={index} 
-                                info={subj.professor} 
+                                info={subj.category} 
                                 count={subj.count}/>
                             })
                         ) : page === 3 ? (
